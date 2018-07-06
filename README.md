@@ -217,5 +217,5 @@ The new generated trajectory with velocity information (orange one) enabled the 
 </p>
 
 ## Video Documentation ##
-A short video of the drone in different scenarios can be found [here](../Video_FCND_Control.mov).
+A short video of the drone in different scenarios can be found [here](../blob/master/Video_FCND_Control.mov).
 
