@@ -199,13 +199,17 @@ Further manual tunings were done at each stage to achieve optimal results.
 
 ### Extra Challenge 1 - Scenario 5: ###
 
-How well is your drone able to follow the trajectory? It is able to hold to the path fairly well?
-
-
 A new `FigureEightFF.txt` was generated with velocity terms using the following addition to the python script:
-```py
 
+```py
+vx = (x-px)/timestep;
+vy = (y-py)/timestep;
+vz = (z-pz)/timestep;
+px = x;
+py = y;
+pz = z;
 ```
+
 The new generated trajectory with velocity information (orange one) enabled the drone to track the path well, especially the z component, and thus the over all position error was lower compared to the drone following the trajectory without velocity term (the red one). 
 
 <p align="center">
