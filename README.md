@@ -8,14 +8,14 @@ This is the readme for the C++ control project for FCND course offered by Udacit
 A proportional controller on body rates was implemented. Intially I totally forgot to include the moment of inertia which resulted in wrong moment commands that was observed and corrected later.
 
 ```
-	float p_error = pqrCmd.x - pqr.x;
-    momentCmd.x = kpPQR.x * p_error * Ixx;
-    
-    float q_error = pqrCmd.y - pqr.y;
-    momentCmd.y = kpPQR.y * q_error * Iyy;
-    
-    float r_error = pqrCmd.z - pqr.z;
-    momentCmd.z = kpPQR.z * r_error * Izz;
+float p_error = pqrCmd.x - pqr.x;
+momentCmd.x = kpPQR.x * p_error * Ixx;
+
+float q_error = pqrCmd.y - pqr.y;
+momentCmd.y = kpPQR.y * q_error * Iyy;
+
+float r_error = pqrCmd.z - pqr.z;
+momentCmd.z = kpPQR.z * r_error * Izz;
 ```
 
 
@@ -23,17 +23,17 @@ A proportional controller on body rates was implemented. Intially I totally forg
 Following the same implementation provided in the python code, the controller uses the vehicle acceleration, thrust, and attitude to result in body rate commands. Drone's mass and attitude comands limits were accounted for when calculating the target angles.
 
 ```
-    float c_d = collThrustCmd / mass;
+float c_d = collThrustCmd / mass;
+
+if (collThrustCmd > 0.0){
+    float target_R13 = - CONSTRAIN(accelCmd.x / c_d,-maxTiltAngle,maxTiltAngle);
+    float target_R23 = - CONSTRAIN(accelCmd.y / c_d,-maxTiltAngle,maxTiltAngle);
     
-    if (collThrustCmd > 0.0){
-        float target_R13 = - CONSTRAIN(accelCmd.x / c_d,-maxTiltAngle,maxTiltAngle);
-        float target_R23 = - CONSTRAIN(accelCmd.y / c_d,-maxTiltAngle,maxTiltAngle);
-        
-        pqrCmd.x = (1 / R(2, 2)) * (-R(1, 0) * kpBank * (R(0, 2) - target_R13) + R(0, 0) * kpBank * (R(1, 2) -target_R23));
-        
-        pqrCmd.y = (1 / R(2, 2)) * (-R(1, 1) * kpBank * (R(0, 2) - target_R13) + R(0, 1) * kpBank * (R(1, 2) -target_R23));
-    }
-    pqrCmd.z = 0.0;
+    pqrCmd.x = (1 / R(2, 2)) * (-R(1, 0) * kpBank * (R(0, 2) - target_R13) + R(0, 0) * kpBank * (R(1, 2) -target_R23));
+    
+    pqrCmd.y = (1 / R(2, 2)) * (-R(1, 1) * kpBank * (R(0, 2) - target_R13) + R(0, 1) * kpBank * (R(1, 2) -target_R23));
+}
+pqrCmd.z = 0.0;
 ```
 
 
@@ -85,26 +85,26 @@ A P controller were used to cmmand the yaw rate. A false comment in the document
 The thrust and moments were converted to the appropriate to the desired thrust forces for the moments. The dimensions of the drone ws accounted for when calculating thrust from moments. This was the most confusing bit of the project, however, a nice documentation from one of the students clarified everything!
 
 ```
-    float l = L / sqrt(2);
-    float c_bar = collThrustCmd;
-    float p_bar = momentCmd.x / l;
-    float q_bar = momentCmd.y / l;
-    float r_bar = momentCmd.z / kappa;
-    
-    float omega_1 = (c_bar + p_bar + q_bar - r_bar) / 4.0f;
-    float omega_2 = (c_bar - p_bar + q_bar + r_bar) / 4.0f;
-    float omega_3 = (c_bar + p_bar - q_bar + r_bar) / 4.0f;
-    float omega_4 = (c_bar - p_bar - q_bar - r_bar) / 4.0f;
-    
-    cmd.desiredThrustsN[0] = CONSTRAIN(omega_1, minMotorThrust, maxMotorThrust);// front left
-    cmd.desiredThrustsN[1] = CONSTRAIN(omega_2, minMotorThrust, maxMotorThrust);// front right
-    cmd.desiredThrustsN[2] = CONSTRAIN(omega_3, minMotorThrust, maxMotorThrust);// rear left
-    cmd.desiredThrustsN[3] = CONSTRAIN(omega_4, minMotorThrust, maxMotorThrust);// rear right
+float l = L / sqrt(2);
+float c_bar = collThrustCmd;
+float p_bar = momentCmd.x / l;
+float q_bar = momentCmd.y / l;
+float r_bar = momentCmd.z / kappa;
+
+float omega_1 = (c_bar + p_bar + q_bar - r_bar) / 4.0f;
+float omega_2 = (c_bar - p_bar + q_bar + r_bar) / 4.0f;
+float omega_3 = (c_bar + p_bar - q_bar + r_bar) / 4.0f;
+float omega_4 = (c_bar - p_bar - q_bar - r_bar) / 4.0f;
+
+cmd.desiredThrustsN[0] = CONSTRAIN(omega_1, minMotorThrust, maxMotorThrust);// front left
+cmd.desiredThrustsN[1] = CONSTRAIN(omega_2, minMotorThrust, maxMotorThrust);// front right
+cmd.desiredThrustsN[2] = CONSTRAIN(omega_3, minMotorThrust, maxMotorThrust);// rear left
+cmd.desiredThrustsN[3] = CONSTRAIN(omega_4, minMotorThrust, maxMotorThrust);// rear right
 ```
 
 ## Flight Evaluation ##
 The drone looks stable and performs the required task in all scenarios and can handle the non-linearities of some scenarios. For an initial tuning of kpPosXY, KpPosZ, KpVelXY, KpVelZ I followed an exhaustive search approach using a python code I wrote that can be found below:
-```
+```py
 import fileinput
 import time
 
@@ -151,7 +151,7 @@ for kpPosXY in drange(kpPosXY_min,kpPosXY_max,rate):
 ```
 
 For tuning kpYaw and kpPQRz, a similar python code was used: 
-```
+```py
 import fileinput
 import time
 
