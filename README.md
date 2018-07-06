@@ -4,10 +4,10 @@ This is the readme for the C++ control project for FCND course offered by Udacit
 
 ## Implemented Controller ##
 
-### Implemented body rate control in C++. ###
+### Implemented body rate control. ###
 A proportional controller on body rates was implemented. Intially I totally forgot to include the moment of inertia which resulted in wrong moment commands that was observed and corrected later.
 
-```
+```cpp
 float p_error = pqrCmd.x - pqr.x;
 momentCmd.x = kpPQR.x * p_error * Ixx;
 
@@ -19,10 +19,10 @@ momentCmd.z = kpPQR.z * r_error * Izz;
 ```
 
 
-### Implement roll pitch control in C++. ###
+### Implement roll pitch control. ###
 Following the same implementation provided in the python code, the controller uses the vehicle acceleration, thrust, and attitude to result in body rate commands. Drone's mass and attitude comands limits were accounted for when calculating the target angles.
 
-```
+```cpp
 float c_d = collThrustCmd / mass;
 
 if (collThrustCmd > 0.0){
@@ -37,54 +37,52 @@ pqrCmd.z = 0.0;
 ```
 
 
-### Implement altitude controller in C++. ###
-
-
+### Implement altitude controller. ###
 Using the down position and the down velocity, thrust commands were produced. Adding the integrator later on made it possible to to handle the weight non-idealities presented in scenario 4.
 
-```
-    integratedAltitudeError += (posZCmd - posZ) * dt;
-    
-    float velocity_cmd = CONSTRAIN(kpPosZ * (posZCmd - posZ) + velZCmd,-maxAscentRate,maxDescentRate);
-    
-    float acceleration_cmd = kpVelZ * (velocity_cmd - velZ) + accelZCmd + KiPosZ * integratedAltitudeError;
-    
-    acceleration_cmd -= CONST_GRAVITY;
-    
-    thrust = - acceleration_cmd * mass / R(2, 2);
+```cpp
+integratedAltitudeError += (posZCmd - posZ) * dt;
+
+float velocity_cmd = CONSTRAIN(kpPosZ * (posZCmd - posZ) + velZCmd,-maxAscentRate,maxDescentRate);
+
+float acceleration_cmd = kpVelZ * (velocity_cmd - velZ) + accelZCmd + KiPosZ * integratedAltitudeError;
+
+acceleration_cmd -= CONST_GRAVITY;
+
+thrust = - acceleration_cmd * mass / R(2, 2);
 ```
 
-### Implement lateral position control in C++. ###
+### Implement lateral position control. ###
 Both the velocity and position were used to command local acceleration using a PD controller. Vehicle limits where incorporated into the produced commands.
 
-```
-    V3F velocity_cmd = kpPosXY * (posCmd - pos) + velCmd;
-    
-    velocity_cmd.x = CONSTRAIN(velocity_cmd.x, -maxSpeedXY, maxSpeedXY);
-    velocity_cmd.y = CONSTRAIN(velocity_cmd.y, -maxSpeedXY, maxSpeedXY);
-    velocity_cmd.z = 0.0;
-    
-    accelCmd = kpVelXY * (velocity_cmd - vel) + accelCmdFF;
-    
-    accelCmd.x = CONSTRAIN(accelCmd.x, -maxAccelXY, maxAccelXY);
-    accelCmd.y = CONSTRAIN(accelCmd.y, -maxAccelXY, maxAccelXY);
-    accelCmd.z = 0.0;
+```cpp
+V3F velocity_cmd = kpPosXY * (posCmd - pos) + velCmd;
+
+velocity_cmd.x = CONSTRAIN(velocity_cmd.x, -maxSpeedXY, maxSpeedXY);
+velocity_cmd.y = CONSTRAIN(velocity_cmd.y, -maxSpeedXY, maxSpeedXY);
+velocity_cmd.z = 0.0;
+
+accelCmd = kpVelXY * (velocity_cmd - vel) + accelCmdFF;
+
+accelCmd.x = CONSTRAIN(accelCmd.x, -maxAccelXY, maxAccelXY);
+accelCmd.y = CONSTRAIN(accelCmd.y, -maxAccelXY, maxAccelXY);
+accelCmd.z = 0.0;
 ```
 
 
-### Implement yaw control in C++. ###
+### Implement yaw control. ###
 A P controller were used to cmmand the yaw rate. A false comment in the documentation of the project on the functionality of fmod resulted in some confusion that was clarified after refuring to the slack community.
 
-```
-	yawCmd = fmod(yawCmd,F_PI);
-    yawRateCmd = kpYaw * fmod(yawCmd-yaw,F_PI);
+```cpp
+yawCmd = fmod(yawCmd,F_PI);
+yawRateCmd = kpYaw * fmod(yawCmd-yaw,F_PI);
 ```
 
-### Implement calculating the motor commands given commanded thrust and moments in C++.###
+### Calculate the motor commands given commanded thrust and moments.###
 
 The thrust and moments were converted to the appropriate to the desired thrust forces for the moments. The dimensions of the drone ws accounted for when calculating thrust from moments. This was the most confusing bit of the project, however, a nice documentation from one of the students clarified everything!
 
-```
+```cpp
 float l = L / sqrt(2);
 float c_bar = collThrustCmd;
 float p_bar = momentCmd.x / l;
@@ -199,7 +197,17 @@ Further manual tunings were done at each stage to achieve optimal results.
 <img src="animations/scenario4_Haya.gif" width="500"/>
 </p>
 
-### Scenario 5: ###
+### Extra Challenge 1 - Scenario 5: ###
+
+How well is your drone able to follow the trajectory? It is able to hold to the path fairly well?
+
+
+A new `FigureEightFF.txt` was generated with velocity terms using the following addition to the python script:
+```py
+
+```
+The new generated trajectory with velocity information (orange one) enabled the drone to track the path well, especially the z component, and thus the over all position error was lower compared to the drone following the trajectory without velocity term (the red one). 
+
 <p align="center">
 <img src="animations/scenario5_Haya.gif" width="500"/>
 </p>
