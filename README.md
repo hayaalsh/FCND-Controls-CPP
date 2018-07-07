@@ -1,6 +1,7 @@
 # FCND Project Submission #
 
 This is the readme for the C++ control project for FCND course offered by Udacity. The file include all the rubric points and how they were addressed and specifically where in the code each step was handled.
+More details about the project devoloped by Udacity, contributors, and licensing, can be found [here](../master/README_Udacity.md)
 
 ## Implemented Controller ##
 
