@@ -1,5 +1,7 @@
 # FCND Project 3: Controls #
 
+https://user-images.githubusercontent.com/22026004/145098226-7c0d77f5-02b1-47dd-affd-46c7a1a0d7fb.mov
+
 This is the readme for the C++ control project for FCND course offered by Udacity. The file include all the rubric points and how they were addressed and specifically where in the code each step was handled.
 More details about the project devoloped by Udacity, contributors, and licensing, can be found [here](../master/README_Udacity.md).
 
@@ -216,7 +218,3 @@ The new generated trajectory with velocity information (orange one) enabled the 
 <p align="center">
 <img src="animations/scenario5_Haya.gif" width="500"/>
 </p>
-
-## Video Documentation ##
-A short video of the drone in different scenarios can be found [here](../master/Video_FCND_Control.mov).
-
